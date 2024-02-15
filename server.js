@@ -1,7 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
+
+const { success } = require('./helper.js');
+const pokemons = require('./pokemons.js');
+
 const app = express();
 const PORT = 3001;
+
+app.use(morgan('dev'))
 
 // Middleware pour analyser le JSON
 app.use(express.json());
@@ -54,8 +61,21 @@ app.get('/get-lottos', async (req, res) => {
 });
 
 app.get('/test', (req, res) => {
-  res.send('Bitch pute naigre');
+  res.send('Bitch pute de tootot de naigre');
 });
+
+app.get('/api/pokemons/:id', (req, res) => {
+  const id = parseInt(req.params.id)
+  const pokemon = pokemons.find(pokemon => pokemon.id === id)
+  const message = "Nous avons bien trouvé le pokemon"
+  res.json(success(message, pokemon))
+}); 
+
+app.get('/api/pokemons', (req, res) => {
+  const message = "Voici la liste de tout les pokemon du pokedex"
+  res.json(success(message, pokemons))
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
