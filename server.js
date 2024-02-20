@@ -1,41 +1,28 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-const favicon = require('serve-favicon');
-const { Sequelize } = require('sequelize');
-const bodyParser = require('body-parser');
+const express = require('express')
+const mongoose = require('mongoose')
+const morgan = require('morgan')
+const favicon = require('serve-favicon')
+const bodyParser = require('body-parser')
+const sequelize = require('./src/db/sequelize')
 
-const { success, getUniqueId } = require('./helper.js');
-let pokemons = require('./pokemons.js');
-
-const app = express();
-const PORT = 3001;
+const app = express()
+const PORT = 3001
 
 app
 .use(favicon(__dirname + '/favicon.ico'))
 .use(morgan('dev'))
-.use(bodyParser.json())
-
 // Middleware pour analyser le JSON
-app.use(express.json());
+.use(bodyParser.json())
+.use(express.json())
 
-const sequelize = new Sequelize(
-  'lukstopia',
-  'root',
-  '',
-  {
-    host: 'localhost',
-    dialect: 'mariadb',
-    dialectOptions: {
-      timezone: 'Etc/GMT-2'
-    },
-    logging: false
-  }
-)
+sequelize.initDb()
 
-sequelize.authenticate()
-.then(_ => console.log("vous vous etes bien connecté à la DB"))
-.catch(error => console.log(`une erreur est survenue lor de la connexion à la DB ${error}`))
+require('./src/route/findAllPokemons.js')(app)
+require('./src/route/findPokemonByPk.js')(app)
+require('./src/route/createPokemon.js')(app)
+require('./src/route/updatePokemon.js')(app)
+require('./src/route/deletePokemon.js')(app)
+
 
 // CONNEXION MONGO DB
 /* const uri = "mongodb://localhost:27017/lukstopiaDB";
@@ -91,7 +78,7 @@ app.get('/test', (req, res) => {
 
 
 // API REST PROJET TEST
-app.post('/api/pokemons', (req, res) => {
+/* app.post('/api/pokemons', (req, res) => {
   const id = getUniqueId(pokemons)
   const pokemonCreated = {...req.body, ...{id: id, create: new Date()}}
   pokemons.push(pokemonCreated)
@@ -129,7 +116,7 @@ app.delete('/api/pokemons/:id', (req, res) => {
   const message = `Le pokémon ${pokemonDeleted.name} a bien été supprimé.`
   res.json(success(message, pokemonDeleted))
 });
-
+ */
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
