@@ -23,7 +23,6 @@ require('./src/route/createPokemon.js')(app)
 require('./src/route/updatePokemon.js')(app)
 require('./src/route/deletePokemon.js')(app)
 
-
 // CONNEXION MONGO DB
 /* const uri = "mongodb://localhost:27017/lukstopiaDB";
 const connectDB = async () => {
